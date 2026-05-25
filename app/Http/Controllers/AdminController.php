@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Cancha;
 use App\Models\Horario;
+use App\Models\Reserva;
+use App\Models\Usuario;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -156,5 +158,62 @@ class AdminController extends Controller
 
         return redirect()->route('admin.horarios', $cancha_id)
                        ->with('success', 'Horario eliminado exitosamente');
+    }
+
+        // Panel de Reservas
+    public function reservas(Request $request)
+    {
+        $canchas = Cancha::all();
+        $cancha_id = $request->query('cancha_id');
+        
+        $reservas = Reserva::with(['usuario', 'cancha', 'horario'])
+                            ->when($cancha_id, function($query) use ($cancha_id) {
+                                return $query->where('cancha_id', $cancha_id);
+                            })
+                            ->orderBy('fecha', 'desc')
+                            ->get();
+        
+        return view('admin.reservas.index', compact('reservas', 'canchas', 'cancha_id'));
+    }
+
+    // Panel de Usuarios
+    public function usuarios()
+    {
+        $usuarios = Usuario::with('reservas')->get();
+        return view('admin.usuarios.index', compact('usuarios'));
+    }
+
+    // Editar usuario
+    public function editarUsuario(Usuario $usuario)
+    {
+        return view('admin.usuarios.edit', compact('usuario'));
+    }
+
+    // Actualizar usuario
+    public function actualizarUsuario(Request $request, Usuario $usuario)
+    {
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'numero' => 'required|string|max:20',
+            'documento' => 'required|string|unique:usuarios,documento,' . $usuario->id,
+        ], [
+            'nombre.required' => 'El nombre es obligatorio',
+            'numero.required' => 'El número es obligatorio',
+            'documento.required' => 'El documento es obligatorio',
+            'documento.unique' => 'Este documento ya está registrado',
+        ]);
+
+        $usuario->update($validated);
+
+        return redirect()->route('admin.usuarios')
+                    ->with('success', 'Usuario actualizado exitosamente');
+    }
+
+    // Eliminar usuario
+    public function eliminarUsuario(Usuario $usuario)
+    {
+        $usuario->delete();
+
+        return back()->with('success', 'Usuario eliminado exitosamente');
     }
 }

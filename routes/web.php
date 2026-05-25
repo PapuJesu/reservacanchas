@@ -20,8 +20,11 @@ Route::post('/registro', [UsuarioController::class, 'store'])->name('usuarios.st
 Route::get('/', [CanchaController::class, 'index'])->name('home');
 Route::get('/canchas/{cancha}', [CanchaController::class, 'show'])->name('canchas.show');
 
-// Rutas protegidas (requieren sesión iniciada)
+// ==========================================
+// RUTAS PROTEGIDAS (Requieren sesión iniciada)
+// ==========================================
 Route::middleware('check.user.session')->group(function () {
+    
     // Dashboard de usuario (mis reservas)
     Route::get('/mis-reservas/{usuario}', [UsuarioController::class, 'show'])->name('usuarios.show');
     
@@ -35,10 +38,13 @@ Route::middleware('check.user.session')->group(function () {
     // Cancelar reserva
     Route::delete('/reservas/{reserva}', [ReservaController::class, 'destroy'])->name('reservas.destroy');
 
-    // Rutas de Admin (solo usuario ID 1)
-    Route::middleware('admin')->group(function () {
-    Route::prefix('admin')->name('admin.')->group(function () {
-    // Canchas
+    // ==========================================
+    // RUTAS DE ADMINISTRADOR (Solo usuario ID 1)
+    // Combinamos middleware, prefijo de URL y prefijo de nombre en una sola línea elegante
+    // ==========================================
+    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+        
+        // Canchas
         Route::get('/canchas', [AdminController::class, 'index'])->name('canchas.index');
         Route::get('/canchas/crear', [AdminController::class, 'create'])->name('canchas.create');
         Route::post('/canchas', [AdminController::class, 'store'])->name('canchas.store');
@@ -50,7 +56,16 @@ Route::middleware('check.user.session')->group(function () {
         Route::get('/canchas/{cancha}/horarios', [AdminController::class, 'horarios'])->name('horarios');
         Route::get('/canchas/{cancha}/horarios/crear', [AdminController::class, 'crearHorario'])->name('horarios.create');
         Route::post('/canchas/{cancha}/horarios', [AdminController::class, 'guardarHorario'])->name('horarios.store');
-        Route::delete('/horarios/{horario}', [AdminController::class, 'eliminarHorario'])->name('horarios.destroy');    
-    });
-});
-});
+        Route::delete('/horarios/{horario}', [AdminController::class, 'eliminarHorario'])->name('horarios.destroy');   
+        
+        // Reservas (¡Aquí está la que fallaba!)
+        Route::get('/reservas', [AdminController::class, 'reservas'])->name('reservas');
+
+        // Usuarios
+        Route::get('/usuarios', [AdminController::class, 'usuarios'])->name('usuarios');
+        Route::get('/usuarios/{usuario}/editar', [AdminController::class, 'editarUsuario'])->name('usuarios.edit');
+        Route::put('/usuarios/{usuario}', [AdminController::class, 'actualizarUsuario'])->name('usuarios.update');
+        Route::delete('/usuarios/{usuario}', [AdminController::class, 'eliminarUsuario'])->name('usuarios.destroy');
+    }); // Cierra Admin Group
+    
+}); // Cierra Check User Session Group

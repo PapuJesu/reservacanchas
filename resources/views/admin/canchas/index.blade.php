@@ -5,14 +5,20 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <h1 class="mb-4">🔧 Panel de Administración - Canchas</h1>
+            <h1 class="mb-4"> Panel de Administración - Canchas</h1>
         </div>
     </div>
 
     <div class="row mb-4">
         <div class="col-md-12">
             <a href="{{ route('admin.canchas.create') }}" class="btn btn-primary">
-                ➕ Crear Nueva Cancha
+                Crear Nueva Cancha
+            </a>
+            <a href="{{ route('admin.reservas') }}" class="btn btn-info">
+                Ver Reservas
+            </a>
+            <a href="{{ route('admin.usuarios') }}" class="btn btn-warning">
+                Gestionar Usuarios
             </a>
         </div>
     </div>

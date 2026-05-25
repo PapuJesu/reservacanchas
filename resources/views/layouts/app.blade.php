@@ -21,7 +21,7 @@
                     </li>
                     @if(session('usuario_id') === 6)
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('admin.canchas.index') }}">⚙️ Admin Panel</a>
+                            <a class="nav-link" href="{{ route('admin.canchas.index') }}">Admin Panel</a>
                         </li>
                     @endif
 
