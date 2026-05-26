@@ -80,7 +80,19 @@
                     <h5 class="mb-0">Información General</h5>
                 </div>
                 <div class="card-body">
-                    <p>{{ $cancha->informacion ?? 'No hay información disponible' }}</p>
+
+                    @if($cancha->informacion)
+                        <ul class="mb-0">
+                            @foreach(explode("\n", $cancha->informacion) as $info)
+                                @if(trim($info))
+                                    <li>{{ trim($info) }}</li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    @else
+                        <p class="text-muted mb-0">No hay información disponible</p>
+                    @endif
+
                 </div>
             </div>
 
