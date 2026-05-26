@@ -31,7 +31,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('home') }}">Canchas</a>
                     </li>
-                    @if(session('usuario_id') === 6)
+                    @if(session('usuario_id') == env('ADMIN_USER_ID'))
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('admin.canchas.index') }}">Admin Panel</a>
                         </li>
