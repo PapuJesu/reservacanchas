@@ -20,6 +20,9 @@ Route::post('/registro', [UsuarioController::class, 'store'])->name('usuarios.st
 Route::get('/', [CanchaController::class, 'index'])->name('home');
 Route::get('/canchas/{cancha}', [CanchaController::class, 'show'])->name('canchas.show');
 
+//Ruta para descargar PDF reserva
+Route::get('/reservas/{id}/pdf', [ReservaController::class, 'descargarPDF'])->name('reservas.pdf');
+
 // ==========================================
 // RUTAS PROTEGIDAS (Requieren sesión iniciada)
 // ==========================================
@@ -69,3 +72,4 @@ Route::middleware('check.user.session')->group(function () {
     }); // Cierra Admin Group
     
 }); // Cierra Check User Session Group
+

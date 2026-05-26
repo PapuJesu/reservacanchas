@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Reserva;
 use App\Models\Cancha;
 use App\Models\Horario;
+use App\Models\Reserva;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class ReservaController extends Controller
@@ -98,5 +99,32 @@ public function store(Request $request)
         $reserva->update(['estado' => 'cancelada']);
 
         return back()->with('success', 'Reserva cancelada');
+    }
+
+    //Descargar PDF
+    public function descargarPDF($id)
+    {
+        // 1. Buscamos la reserva por ID e incluimos de golpe sus relaciones 
+        // para evitar consultas repetitivas (Eager Loading)
+        $reserva = Reserva::with(['usuario', 'cancha', 'horario'])->findOrFail($id);
+
+        // 2. Extraemos las variables de sus relaciones, tal cual lo haces en el método show
+        $usuario = $reserva->usuario;
+        $cancha = $reserva->cancha;
+        $horario = $reserva->horario;
+
+        // 3. Procesamos el logo en Base64 para evitar problemas de rutas locales/producción
+        $rutaLogo = public_path('logo/logo.png');
+        $logoBase64 = '';
+        if (file_exists($rutaLogo)) {
+            $logoData = base64_encode(file_get_contents($rutaLogo));
+            $logoBase64 = 'data:image/png;base64,' . $logoData;
+        }
+
+        // 4. Cargamos la vista del PDF pasando exactamente el mismo compact 
+        $pdf = Pdf::loadView('admin.reservas.pdf', compact('reserva', 'usuario', 'cancha', 'horario', 'logoBase64'));
+
+        // 5. Retornamos la descarga con un nombre dinámico limpio
+        return $pdf->download('reserva_' . $reserva->id . '.pdf');
     }
 }

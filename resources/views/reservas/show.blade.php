@@ -64,9 +64,9 @@
                 <a href="{{ route('usuarios.show', session('usuario_id')) }}" class="btn btn-secondary">
                     Volver a Mis Reservas
                 </a>
-                <button type="button" class="btn btn-primary" onclick="window.print()">
-                    Descargar PDF
-                </button>
+                <a href="{{ route('reservas.pdf', $reserva->id) }}" class="btn btn-primary">
+                    Descargar PDF Oficial
+                </a>
             </div>
 
             @if($reserva->estado == 'confirmada')
